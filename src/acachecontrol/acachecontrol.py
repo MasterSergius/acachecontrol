@@ -2,6 +2,7 @@ import aiohttp
 import cachecontrol
 
 from .cache import AsyncCache
+from .request_context_manager import RequestContextManager
 
 
 class AsyncCacheControl:
@@ -10,7 +11,8 @@ class AsyncCacheControl:
         self._async_session = aiohttp.ClientSession()
 
     def request(self, method, url, **params):
-        return self._async_session.request(method, url, **params)
+        return RequestContextManager(self.cache, self._async_session.request(method, url, **params))
+        #return self._async_session.request(method, url, **params)
 
     def get(self, url, *, allow_redirects=True, **kwargs):
         return self._async_session.get(url, allow_redirects=allow_redirects, **kwargs)
