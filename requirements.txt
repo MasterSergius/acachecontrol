@@ -1,0 +1,3 @@
+aiohttp
+CacheControl>=0.12.6
+py-memoize>=1.0.3
