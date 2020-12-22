@@ -1,5 +1,10 @@
 # Async CacheControl for aiohttp
 
+> Requires Python3.6+
+
+### Note: Library is under development.
+### For contributing see development_notes.md as starting guide
+
 ## Usage
 
 ```py

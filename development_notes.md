@@ -13,4 +13,4 @@ pip install --no-cache-dir dist/acachecontrol-{VERSION}.tar.gz
 Then run tests:
 `pytest tests` or `python -m pytest tests`
 
-Supported python versions: 3.7+ (asyncio.run() introduced in 3.7)
+Supported python versions: 3.6+ (Note that asyncio.run() introduced in 3.7)
