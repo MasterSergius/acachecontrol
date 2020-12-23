@@ -1,5 +1,6 @@
 class RequestContextManager:
     """Wrapper around _RequestContextManager from aiohttp."""
+
     def __init__(self, session, cache, method, url, **params):
         self.cache = cache
         self.request = session.request(method, url, **params)
@@ -7,6 +8,7 @@ class RequestContextManager:
         self.in_request = False
 
     async def __aenter__(self):
+        await self.cache.register_new_key(self.cache_key)
         if self.cache_key not in self.cache:
             self.in_request = await self.request.__aenter__()
         return self
