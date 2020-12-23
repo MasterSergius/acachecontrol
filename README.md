@@ -5,6 +5,10 @@
 ### Note: Library is under development.
 ### For contributing see development_notes.md as starting guide
 
+## What and why
+
+There is a good and simple library [CacheControl](https://github.com/ionrock/cachecontrol) written for python requests library. And there is nothing similar for aiohttp. "Async CacheControl" project strives to cover this hole.
+
 ## Usage
 
 ```py
