@@ -55,7 +55,6 @@ setup(
     python_requires='>=3.6',
     install_requires=[
         'aiohttp',
-        'CacheControl',
-        'py-memoize',
+        'CacheControl'
     ]
 )
