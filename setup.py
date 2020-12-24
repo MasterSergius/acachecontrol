@@ -1,7 +1,7 @@
+"""This setup is based on https://blog.ionelmc.ro/2014/05/25/python-packaging/"""
+
 from __future__ import absolute_import
 
-import io
-import re
 from glob import glob
 from os.path import basename
 from os.path import dirname
@@ -9,15 +9,23 @@ from os.path import join
 from os.path import realpath
 from os.path import splitext
 
-from read_version import read_version
 from setuptools import find_packages
 from setuptools import setup
 
-package_path = join(realpath(dirname((__file__))), 'src/acachecontrol')
+
+def read_version():
+    """Read version from package init file (__init__.py)"""
+    full_path = join(realpath(dirname((__file__))),
+                     'src/acachecontrol/__init__.py')
+    with open(full_path) as f:
+        for line in f:
+            if '__version__' in line:
+                return line.split('=')[1].strip().strip("'")
+
 
 setup(
     name='acachecontrol',
-    version=read_version(package_path, '__init__.py'),
+    version=read_version(),
     license='Apache License 2.0',
     description='Cache-Control for aiohttp',
     author='Serhii Buniak',
@@ -29,7 +37,6 @@ setup(
     include_package_data=True,
     zip_safe=False,
     classifiers=[
-        # complete classifier list: http://pypi.python.org/pypi?%3Aaction=list_classifiers
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
@@ -46,12 +53,9 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
     project_urls={
-        'Changelog': 'https://github.com/MasterSerius/async_cache_control/blob/master/CHANGELOG.rst',
-        'Issue Tracker': 'https://github.com/MasterSergius/async_cache_control/issues',
+        'Changelog': 'https://github.com/MasterSerius/acachecontrol/blob/master/CHANGELOG.md',
+        'Issue Tracker': 'https://github.com/MasterSergius/acachecontrol/issues',
     },
-    keywords=[
-        # eg: 'keyword1', 'keyword2', 'keyword3',
-    ],
     python_requires='>=3.6',
     install_requires=[
         'aiohttp',
