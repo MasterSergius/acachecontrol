@@ -1,4 +1,4 @@
-__version__ = '0.0.5'
+__version__ = "0.0.5"
 
 
-from .acachecontrol import AsyncCacheControl # noqa
+from .acachecontrol import AsyncCacheControl  # noqa

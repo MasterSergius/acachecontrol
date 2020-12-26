@@ -3,14 +3,9 @@
 from __future__ import absolute_import
 
 from glob import glob
-from os.path import basename
-from os.path import dirname
-from os.path import join
-from os.path import realpath
-from os.path import splitext
+from os.path import basename, dirname, join, realpath, splitext
 
-from setuptools import find_packages
-from setuptools import setup
+from setuptools import find_packages, setup
 
 
 def read_version():
@@ -22,6 +17,15 @@ def read_version():
             if '__version__' in line:
                 return line.split('=')[1].strip().strip("'")
 
+
+# get the dependencies and installs
+with open("requirements.txt", "r", encoding="utf-8") as f:
+    requires = [x.strip() for x in f if x.strip()]
+
+
+# get test dependencies and installs
+with open("test_requirements.txt", "r", encoding="utf-8") as f:
+    test_requires = [x.strip() for x in f if x.strip() and not x.startswith("-r")]
 
 setup(
     name='acachecontrol',
@@ -57,8 +61,6 @@ setup(
         'Issue Tracker': 'https://github.com/MasterSergius/acachecontrol/issues',
     },
     python_requires='>=3.6',
-    install_requires=[
-        'aiohttp',
-        'CacheControl'
-    ]
+    tests_require=test_requires,
+    install_requires=requires,
 )

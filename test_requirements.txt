@@ -1,3 +1,9 @@
-pytest
-pytest-asyncio
-pytest-mock
+-r requirements.txt
+black
+mypy
+pylint
+pytest~=6.2
+pytest-asyncio~=0.14
+pytest-cov
+pytest-mock~=3.4
+pre-commit

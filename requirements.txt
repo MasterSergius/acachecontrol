@@ -1,2 +1,2 @@
-aiohttp
-CacheControl>=0.12.6
+aiohttp~=3.7
+setuptools>=38.0
