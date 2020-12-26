@@ -1,6 +1,23 @@
 import pytest
 
 from acachecontrol import AsyncCacheControl
+from acachecontrol.cache import AsyncCache
+
+
+class CacheObserver(AsyncCache):
+    def __init__(self):
+        super().__init__()
+        self.add_calls = []
+        self.get_calls = []
+
+    def add(self, key, value):
+        super().add(key, value)
+        self.add_calls.append((key, value))
+
+    def get(self, key):
+        value = self.cache.get(self._make_key_hashable(key))
+        self.get_calls.append(key)
+        return value
 
 
 @pytest.mark.asyncio
@@ -13,7 +30,8 @@ async def test_request():
 
 @pytest.mark.asyncio
 async def test_hit_cache():
-    async with AsyncCacheControl() as cached_sess:
+    cache_observer = CacheObserver()
+    async with AsyncCacheControl(cache=cache_observer) as cached_sess:
         async with cached_sess.request('GET', 'http://example.com') as resp:
             resp_text = await resp.text()
             assert 'Example Domain' in resp_text
@@ -22,7 +40,7 @@ async def test_hit_cache():
             resp_text = await resp.text()
             assert 'Example Domain' in resp_text
 
-        # TODO: mock cache obj, assert get was called
+        assert ('GET', 'http://example.com', {}) in cache_observer.get_calls
 
 
 @pytest.mark.asyncio

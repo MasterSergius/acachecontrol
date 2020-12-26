@@ -16,6 +16,11 @@ class AsyncCache:
         return self._make_key_hashable(key) in self.cache
 
     def add(self, key, value):
+        """Add value to cache.
+
+        # TODO: Values should be stored within the following structure:
+        {'created_at': <unix_timestamp>, 'max_age': <seconds>, 'value': <value>}
+        """
         hashable_key = self._make_key_hashable(key)
         self.cache[hashable_key] = value
         self.release_new_key(key)
@@ -51,7 +56,7 @@ class AsyncCache:
     def release_new_key(self, key):
         try:
             self._wait_until_completed.remove(self._make_key_hashable(key))
-        except:
+        except Exception:
             # TODO: consider adding debug log here
             pass
 
