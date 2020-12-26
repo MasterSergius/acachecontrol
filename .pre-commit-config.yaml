@@ -38,5 +38,3 @@ repos:
             language: system
             pass_filenames: false
             entry: pylint --disable=missing-docstring tests
-
-
