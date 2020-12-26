@@ -1,7 +1,6 @@
 import pytest
 
 from acachecontrol import AsyncCacheControl
-from acachecontrol.request_context_manager import RequestContextManager
 
 
 @pytest.mark.asyncio
