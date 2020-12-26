@@ -31,8 +31,7 @@ jobs:
         if [ -f test_requirements.txt ]; then pip install -r test_requirements.txt; fi
     - name: Install acachecontrol package
       run: |
-        python setup.py sdist bdist_wheel
-        python -m pip install --no-cache-dir dist/acachecontrol-*.tar.gz
+        python -m pip install .
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
