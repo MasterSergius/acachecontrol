@@ -3,11 +3,9 @@
 Tests should be run against installed package:
 
 ```sh
-pip uninstall acachecontrol
-rm -rf build
-rm -rf dist
-python3 setup.py sdist bdist_wheel
-pip install --no-cache-dir dist/acachecontrol-{VERSION}.tar.gz
+git clone git@github.com:MasterSergius/acachecontrol.git
+cd acachecontrol
+pip install .
 ```
 
 Then run tests:
