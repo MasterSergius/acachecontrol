@@ -104,7 +104,13 @@ class AsyncCache:
             headers: any dict-like object
 
         Returns:
-            dict
+            dict: parsed cache-control header
+
+        Example:
+            >>> headers = {"Cache-Control": "max-age=604800",
+                           "Content-Type": "application/json"}
+            >>> self.parse_cache_control_header(headers)
+            {"max-age": 604800}
         """
         cache_control_header = headers.get(
             "cache-control",
