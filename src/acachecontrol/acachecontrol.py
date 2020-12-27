@@ -18,13 +18,15 @@ class AsyncCacheControl:
         )
 
     def get(self, url, *, allow_redirects=True, **params):
-        return self.request("GET", url, allow_redirects=allow_redirects, **params)
+        return self.request(
+            "GET", url, allow_redirects=allow_redirects, **params
+        )
 
     def post(self, url, *, data, **params):
         return self.request("POST", url, data=data, **params)
 
     def clear_cache(self):
-        self.cache.clear()
+        self.cache.clear_cache()
 
     async def __aenter__(self):
         return self
