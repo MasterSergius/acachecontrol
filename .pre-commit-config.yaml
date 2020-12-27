@@ -33,8 +33,3 @@ repos:
             language: system
             pass_filenames: false
             entry: pylint --init-hook="import sys; sys.setrecursionlimit(2000)" src
-          - id: pylint-tests
-            name: "PyLint on tests/*"
-            language: system
-            pass_filenames: false
-            entry: pylint --disable=missing-docstring tests
