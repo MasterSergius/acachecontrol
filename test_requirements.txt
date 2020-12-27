@@ -1,5 +1,6 @@
 -r requirements.txt
 black
+isort
 mypy
 flake8
 pytest~=6.2
