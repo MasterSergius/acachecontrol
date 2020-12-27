@@ -78,4 +78,6 @@ class AsyncCache:
     @staticmethod
     def _dict_hash(input_dict: Dict) -> str:
         """Get dict hash."""
-        return hashlib.sha256(json.dumps(input_dict).encode()).hexdigest()
+        return hashlib.sha256(
+            json.dumps(sorted(input_dict.items())).encode()
+        ).hexdigest()
