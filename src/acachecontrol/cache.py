@@ -19,7 +19,7 @@ class AsyncCache:
     def __contains__(self, key):
         return self._make_key_hashable(key) in self.cache
 
-    def add(self, key: Tuple[str, str, Dict], value: Any, headers: Any):
+    def add(self, key: Tuple[str, str, Dict], value: Any, headers: Any) -> None:
         """Add value to the cache.
 
         headers - any dict-like obj
