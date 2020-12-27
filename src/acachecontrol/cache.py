@@ -38,7 +38,7 @@ class AsyncCache:
         try:
             cache_entry = self.cache.get(self._make_key_hashable(key))
             if cache_entry:
-                return cache_entry.get("value")
+                return cache_entry["value"]
             raise CacheException(f"No cache entry for key {key}")
         except Exception:
             raise CacheException(
