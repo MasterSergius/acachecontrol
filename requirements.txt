@@ -1,1 +1,2 @@
-aiohttp
+aiohttp~=3.7
+setuptools>=38.0

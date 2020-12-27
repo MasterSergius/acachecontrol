@@ -3,14 +3,9 @@
 from __future__ import absolute_import
 
 from glob import glob
-from os.path import basename
-from os.path import dirname
-from os.path import join
-from os.path import realpath
-from os.path import splitext
+from os.path import basename, dirname, join, realpath, splitext
 
-from setuptools import find_packages
-from setuptools import setup
+from setuptools import find_packages, setup
 
 
 def read_version():
@@ -23,13 +18,18 @@ def read_version():
                 return line.split('=')[1].strip().strip("'")
 
 
+# get the dependencies and installs
+with open("requirements.txt", "r", encoding="utf-8") as f:
+    requires = [x.strip() for x in f if x.strip()]
+
+
 setup(
     name='acachecontrol',
     version=read_version(),
     license='Apache License 2.0',
     description='Cache-Control for aiohttp',
-    author='Serhii Buniak',
-    author_email='master.sergius@gmail.com',
+    author='Serhii Buniak, Andrii Ivaniuk',
+    author_email='master.sergius@gmail.com, andrii.ivaniuk@gmail.com',
     url='https://github.com/MasterSergius/acachecontrol',
     packages=find_packages('src'),
     package_dir={'': 'src'},
@@ -47,7 +47,6 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Software Development :: Libraries :: Python Modules',
@@ -56,8 +55,6 @@ setup(
         'Changelog': 'https://github.com/MasterSerius/acachecontrol/blob/master/CHANGELOG.md',
         'Issue Tracker': 'https://github.com/MasterSergius/acachecontrol/issues',
     },
-    python_requires='>=3.6',
-    install_requires=[
-        'aiohttp'
-    ]
+    python_requires='>=3.6,<3.9',
+    install_requires=requires,
 )

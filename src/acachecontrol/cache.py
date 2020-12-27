@@ -49,7 +49,7 @@ class AsyncCache:
             await asyncio.sleep(0.1)
             total_wait_time += 0.1
             if total_wait_time >= wait_timeout:
-                raise TimeoutException(f'Timeout exceeded for {key}')
+                raise TimeoutException(f"Timeout exceeded for {key}")
         if hashable_key not in self.cache:
             self._wait_until_completed.add(self._make_key_hashable(key))
 
