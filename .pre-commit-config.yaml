@@ -28,8 +28,13 @@ repos:
             files: ^src/|^tests/
             types: [ file, python ]
             entry: black
-          - id: pylint-src
-            name: "PyLint on src/*"
+          - id: flake8-src-syntax
+            name: "Flake8 on src/* syntax check"
             language: system
             pass_filenames: false
-            entry: pylint --init-hook="import sys; sys.setrecursionlimit(2000)" src
+            entry: flake8 src --count --select=E9,F63,F7,F82 --show-source --statistics
+          - id: flake8-src
+            name: "Flake8 on src/*"
+            language: system
+            pass_filenames: false
+            entry: flake8 src --count --exit-zero --max-complexity=10 --statistics
