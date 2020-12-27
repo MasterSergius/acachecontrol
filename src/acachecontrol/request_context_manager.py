@@ -21,16 +21,16 @@ class RequestContextManager:
 
     async def text(self):
         if self.cache_key not in self.cache:
-            self.response = await self.in_request.text()
+            response = await self.in_request.text()
             self.cache.add(self.cache_key, self.in_request)
         else:
-            self.response = await self.cache.get(self.cache_key).text()
-        return self.response
+            response = await self.cache.get(self.cache_key).text()
+        return response
 
     async def json(self):
         if self.cache_key not in self.cache:
-            self.response = await self.in_request.json()
+            response = await self.in_request.json()
             self.cache.add(self.cache_key, self.in_request)
         else:
-            self.response = await self.cache.get(self.cache_key).json()
-        return self.response
+            response = await self.cache.get(self.cache_key).json()
+        return response

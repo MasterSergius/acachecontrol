@@ -10,3 +10,6 @@ default_section = "THIRDPARTY"
 fail_under = 50
 show_missing = true
 exclude_lines = ["pragma: no cover", "raise NotImplementedError"]
+
+[tool.black]
+line_length = 80
