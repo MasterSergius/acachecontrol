@@ -8,11 +8,11 @@ async def test_request(mocker):
     """Verify AsyncCacheControl.request works correctly."""
     mock_RCM = mocker.Mock()
     async with AsyncCacheControl(
-        request_context_manager=mock_RCM
+        request_context_manager_cls=mock_RCM
     ) as cached_sess:
         _ = cached_sess.request("GET", "http://example.com")
         mock_RCM.assert_called_with(
-            cached_sess._async_session,
+            cached_sess._async_client_session,
             cached_sess.cache,
             "GET",
             "http://example.com",
@@ -22,7 +22,7 @@ async def test_request(mocker):
             "POST", "http://example.com", data={"key": "value"}
         )
         mock_RCM.assert_called_with(
-            cached_sess._async_session,
+            cached_sess._async_client_session,
             cached_sess.cache,
             "POST",
             "http://example.com",
@@ -35,11 +35,11 @@ async def test_get(mocker):
     """Verify AsyncCacheControl.get works correctly."""
     mock_RCM = mocker.Mock()
     async with AsyncCacheControl(
-        request_context_manager=mock_RCM
+        request_context_manager_cls=mock_RCM
     ) as cached_sess:
         _ = cached_sess.get("http://example.com")
         mock_RCM.assert_called_with(
-            cached_sess._async_session,
+            cached_sess._async_client_session,
             cached_sess.cache,
             "GET",
             "http://example.com",
@@ -52,11 +52,11 @@ async def test_post(mocker):
     """Verify AsyncCacheControl.post works correctly."""
     mock_RCM = mocker.Mock()
     async with AsyncCacheControl(
-        request_context_manager=mock_RCM
+        request_context_manager_cls=mock_RCM
     ) as cached_sess:
         _ = cached_sess.post("http://example.com", data={"key": "value"})
         mock_RCM.assert_called_with(
-            cached_sess._async_session,
+            cached_sess._async_client_session,
             cached_sess.cache,
             "POST",
             "http://example.com",

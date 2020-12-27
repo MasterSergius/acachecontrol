@@ -6,15 +6,17 @@ from .request_context_manager import RequestContextManager
 
 class AsyncCacheControl:
     def __init__(
-        self, request_context_manager=RequestContextManager, cache=AsyncCache()
+        self,
+        request_context_manager_cls=RequestContextManager,
+        cache=AsyncCache(),
     ):
-        self._request_context_manager = request_context_manager
+        self._request_context_manager_cls = request_context_manager_cls
         self.cache = cache
-        self._async_session = aiohttp.ClientSession()
+        self._async_client_session = aiohttp.ClientSession()
 
     def request(self, method, url, **params):
-        return self._request_context_manager(
-            self._async_session, self.cache, method, url, **params
+        return self._request_context_manager_cls(
+            self._async_client_session, self.cache, method, url, **params
         )
 
     def get(self, url, *, allow_redirects=True, **params):
@@ -32,4 +34,4 @@ class AsyncCacheControl:
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        await self._async_session.close()
+        await self._async_client_session.close()

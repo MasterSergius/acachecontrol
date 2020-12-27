@@ -1,36 +1,44 @@
 class RequestContextManager:
     """Wrapper around _RequestContextManager from aiohttp."""
 
-    def __init__(self, session, cache, method, url, **params):
+    def __init__(self, client_session, cache, method, url, **params):
         self.cache = cache
-        self.request = session.request(method, url, **params)
+        self.method = method
+        self.url = url
+        self.params = params
+        self.client_session = client_session
         self.cache_key = (method, url, params)
-        self.in_request = False
+        self.response = None
         self.headers = None
 
     async def __aenter__(self):
         await self.cache.register_new_key(self.cache_key)
+
         if self.cache_key not in self.cache:
-            self.in_request = await self.request.__aenter__()
-            self.headers = self.in_request.headers
+            async with self.client_session.request(
+                self.method, self.url, **self.params
+            ) as response:
+                await response.read()
+                self.response = response
+                self.headers = response.headers
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        if self.in_request:
-            return await self.request.__aexit__(exc_type, exc_val, exc_tb)
+        self.response = None
+        self.headers = None
 
     async def text(self):
         if self.cache_key not in self.cache:
-            response = await self.in_request.text()
-            self.cache.add(self.cache_key, self.in_request)
+            response = await self.response.text()
+            self.cache.add(self.cache_key, self.response)
         else:
             response = await self.cache.get(self.cache_key).text()
         return response
 
     async def json(self):
         if self.cache_key not in self.cache:
-            response = await self.in_request.json()
-            self.cache.add(self.cache_key, self.in_request)
+            response = await self.response.json()
+            self.cache.add(self.cache_key, self.response)
         else:
             response = await self.cache.get(self.cache_key).json()
         return response
