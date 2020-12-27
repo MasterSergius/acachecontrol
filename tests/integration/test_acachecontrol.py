@@ -15,7 +15,7 @@ class CacheObserver(AsyncCache):
         self.add_calls.append((key, value, headers))
 
     def get(self, key):
-        value = self.cache.get(self._make_key_hashable(key)).get("value")
+        value = self.cache.get(self._make_key_hashable(key))["value"]
         self.get_calls.append(key)
         return value
 
