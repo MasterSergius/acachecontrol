@@ -5,9 +5,10 @@ Current implementation is just a draft, wrapper around simple dict.
 import asyncio
 import hashlib
 import json
+import time
 from typing import Any, Dict, Tuple
 
-from .exceptions import TimeoutException
+from .exceptions import CacheException, TimeoutException
 
 
 class AsyncCache:
@@ -18,18 +19,33 @@ class AsyncCache:
     def __contains__(self, key):
         return self._make_key_hashable(key) in self.cache
 
-    def add(self, key: Tuple[str, str, Dict], value: Any) -> None:
+    def add(self, key: Tuple[str, str, Dict], value: Any, headers: Any):
         """Add value to the cache.
+
+        headers - any dict-like obj
 
         # TODO: Values should be stored within the following structure:
         {'created_at': <unix_timestamp>, 'max_age': <seconds>, 'value': <value>}
         """
+        cc_header = self.parse_cache_control_header(headers)
         hashable_key = self._make_key_hashable(key)
-        self.cache[hashable_key] = value
+        self.cache[hashable_key] = {
+            "created_at": time.time(),
+            "max-age": cc_header.get("max-age"),
+            "value": value,
+        }
         self.release_new_key(key)
 
     def get(self, key: Tuple[str, str, Dict]) -> Any:
-        return self.cache.get(self._make_key_hashable(key))
+        try:
+            cache_entry = self.cache.get(self._make_key_hashable(key))
+            if cache_entry:
+                return cache_entry.get("value")
+            raise CacheException(f"No cache entry for key {key}")
+        except Exception:
+            raise CacheException(
+                f"Error getting value from cache for key {key}"
+            )
 
     def delete(self, key: Tuple[str, str, Dict]) -> None:
         self.cache.pop(self._make_key_hashable(key), None)
@@ -81,3 +97,31 @@ class AsyncCache:
         return hashlib.sha256(
             json.dumps(sorted(input_dict.items())).encode()
         ).hexdigest()
+
+    @staticmethod
+    def parse_cache_control_header(headers) -> Dict:
+        """Parse cache-control header, get max-age value.
+
+        Args:
+            headers: any dict-like object
+
+        Returns:
+            dict
+        """
+        cache_control_header = headers.get(
+            "cache-control",
+            headers.get("Cache-Control", headers.get("CACHE-CONTROL", "")),
+        )
+
+        # currenly looking only for "max-age" directive
+        # TODO: consider to look at "no-cache" and "no-store" directives
+        parsed_header = {}
+        for directive in cache_control_header.split(","):
+            try:
+                key, value = directive.split("=", 1)
+                if "max-age" == key.strip().lower():
+                    parsed_header["max-age"] = int(value)
+            except ValueError:
+                # ignore other directives for now
+                pass
+        return parsed_header

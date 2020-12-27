@@ -4,3 +4,7 @@ class BaseACacheControlException(Exception):
 
 class TimeoutException(BaseACacheControlException):
     pass
+
+
+class CacheException(BaseACacheControlException):
+    pass
