@@ -24,8 +24,6 @@ class AsyncCache:
 
         headers - any dict-like obj
 
-        # TODO: Values should be stored within the following structure:
-        {'created_at': <unix_timestamp>, 'max_age': <seconds>, 'value': <value>}
         """
         cc_header = self.parse_cache_control_header(headers)
         hashable_key = self._make_key_hashable(key)
