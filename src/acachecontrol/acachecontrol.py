@@ -14,6 +14,7 @@ class AsyncCacheControl:
         self.cache = cache
         self._async_client_session = aiohttp.ClientSession()
 
+
     def request(self, method, url, **params):
         return self._request_context_manager_cls(
             self._async_client_session, self.cache, method, url, **params

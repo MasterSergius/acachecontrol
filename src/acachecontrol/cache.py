@@ -5,10 +5,14 @@ Current implementation is just a draft, wrapper around simple dict.
 import asyncio
 import hashlib
 import json
+import logging
 import time
 from typing import Any, Dict, Tuple
 
 from .exceptions import CacheException, TimeoutException
+
+
+logger = logging.getLogger(__name__)
 
 
 class AsyncCache:
@@ -17,7 +21,16 @@ class AsyncCache:
         self._wait_until_completed = set()
 
     def __contains__(self, key):
-        return self._make_key_hashable(key) in self.cache
+        """Check if entry exists and not expired."""
+        cache_key = self._make_key_hashable(key)
+        if cache_key in self.cache:
+            if self.is_cache_entry_expired(self.cache[cache_key]):
+                logger.debug(f'Cache enntry is expired for key {key}')
+                self.delete(key)
+                return False
+            else:
+                return True
+        return False
 
     def add(self, key: Tuple[str, str, Dict], value: Any, headers: Any) -> None:
         """Add value to the cache.
@@ -33,11 +46,13 @@ class AsyncCache:
             "value": value,
         }
         self.release_new_key(key)
+        logger.debug(f'Added new entry to cache for key {key}')
 
     def get(self, key: Tuple[str, str, Dict]) -> Any:
         try:
             cache_entry = self.cache.get(self._make_key_hashable(key))
             if cache_entry:
+                logger.debug(f'Get entry from cache for key {key}')
                 return cache_entry["value"]
             raise CacheException(f"No cache entry for key {key}")
         except Exception:
@@ -46,10 +61,14 @@ class AsyncCache:
             )
 
     def delete(self, key: Tuple[str, str, Dict]) -> None:
+        logger.debug(f'Delete entry from cache for key {key}')
         self.cache.pop(self._make_key_hashable(key), None)
 
     def clear_cache(self) -> None:
         self.cache = {}
+
+    def is_cache_entry_expired(self, entry: Any) -> bool:
+        return entry["created_at"] + entry["max-age"] < time.time()
 
     async def register_new_key(
         self, key: Tuple[str, str, Dict], wait_timeout: float = 10.0
