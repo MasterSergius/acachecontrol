@@ -15,8 +15,7 @@ def read_version():
     with open(full_path) as f:
         for line in f:
             if '__version__' in line:
-                return line.split('=')[1].strip().strip("'")
-
+                return line.split('=')[1].strip().strip('"')
 
 # get the dependencies and installs
 with open("requirements.txt", "r", encoding="utf-8") as f:

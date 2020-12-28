@@ -30,7 +30,7 @@ class RequestContextManager:
     async def text(self):
         if self.cache_key not in self.cache:
             response = await self.response.text()
-            self.cache.add(self.cache_key, self.response)
+            self.cache.add(self.cache_key, self.response, self.headers)
         else:
             response = await self.cache.get(self.cache_key).text()
         return response
@@ -38,7 +38,7 @@ class RequestContextManager:
     async def json(self):
         if self.cache_key not in self.cache:
             response = await self.response.json()
-            self.cache.add(self.cache_key, self.response)
+            self.cache.add(self.cache_key, self.response, self.headers)
         else:
             response = await self.cache.get(self.cache_key).json()
         return response

@@ -10,12 +10,12 @@ class CacheObserver(AsyncCache):
         self.add_calls = []
         self.get_calls = []
 
-    def add(self, key, value):
-        super().add(key, value)
-        self.add_calls.append((key, value))
+    def add(self, key, value, headers):
+        super().add(key, value, headers)
+        self.add_calls.append((key, value, headers))
 
     def get(self, key):
-        value = self.cache.get(self._make_key_hashable(key))
+        value = self.cache.get(self._make_key_hashable(key))["value"]
         self.get_calls.append(key)
         return value
 
