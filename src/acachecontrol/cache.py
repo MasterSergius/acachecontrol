@@ -14,10 +14,14 @@ from .exceptions import CacheException, TimeoutException
 logger = logging.getLogger(__name__)
 
 
+DEFAULT_MAX_AGE = 120  # seconds
+
+
 class AsyncCache:
-    def __init__(self):
+    def __init__(self, config={}):
         self.cache = {}  # type: Dict
         self._wait_until_completed = set()
+        self.default_max_age = config.get("max-age", DEFAULT_MAX_AGE)
 
     def __contains__(self, key):
         """Check if entry exists and not expired."""
@@ -41,7 +45,7 @@ class AsyncCache:
         hashable_key = self._make_key_hashable(key)
         self.cache[hashable_key] = {
             "created_at": time.time(),
-            "max-age": cc_header.get("max-age"),
+            "max-age": cc_header.get("max-age", self.default_max_age),
             "value": value,
         }
         self.release_new_key(key)
