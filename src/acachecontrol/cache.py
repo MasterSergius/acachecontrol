@@ -52,22 +52,22 @@ class AsyncCache:
             "value": value,
         }
         self.release_new_key(key)
-        logger.debug(f"Added new entry to cache for key {key}")
+        logger.debug(f"Added a new entry to cache for {key} key")
 
     def get(self, key: Tuple[str, str, Dict]) -> Any:
         try:
             cache_entry = self.cache.get(self._make_key_hashable(key))
             if cache_entry:
-                logger.debug(f"Get entry from cache for key {key}")
+                logger.debug(f"Get entry from cache for {key} key")
                 return cache_entry["value"]
-            raise CacheException(f"No cache entry for key {key}")
+            raise CacheException(f"No cache entry for {key} key")
         except Exception:
             raise CacheException(
-                f"Error getting value from cache for key {key}"
+                f"Error getting value from cache for {key} key"
             )
 
     def delete(self, key: Tuple[str, str, Dict]) -> None:
-        logger.debug(f"Delete entry from cache for key {key}")
+        logger.debug(f"Delete entry from cache for {key} key")
         self.cache.pop(self._make_key_hashable(key), None)
 
     def clear_cache(self) -> None:
