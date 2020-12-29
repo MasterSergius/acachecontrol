@@ -25,10 +25,14 @@ class AsyncCache:
 
     def __contains__(self, key):
         """Check if entry exists and not expired."""
-        cache_key = self._make_key_hashable(key)
-        if cache_key in self.cache:
+        return self._make_key_hashable(key) in self.cache
+
+    def has_valid_entry(self, key):
+        """Check if entry exists and not expired, delete expired."""
+        if key in self:
+            cache_key = self._make_key_hashable(key)
             if self.is_cache_entry_expired(self.cache[cache_key]):
-                logger.debug(f"Cache enntry is expired for key {key}")
+                logger.debug(f"Cache entry is expired for {key} key")
                 self.delete(key)
                 return False
             else:

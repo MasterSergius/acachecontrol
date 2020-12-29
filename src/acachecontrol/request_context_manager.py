@@ -14,7 +14,7 @@ class RequestContextManager:
     async def __aenter__(self):
         await self.cache.register_new_key(self.cache_key)
 
-        if self.cache_key not in self.cache:
+        if not self.cache.has_valid_entry(self.cache_key):
             async with self.client_session.request(
                 self.method, self.url, **self.params
             ) as response:
@@ -31,7 +31,7 @@ class RequestContextManager:
         self.headers = None
 
     async def text(self):
-        if self.cache_key not in self.cache:
+        if not self.cache.has_valid_entry(self.cache_key):
             response = await self.response.text()
             self.cache.add(self.cache_key, self.response, self.headers)
         else:
@@ -39,7 +39,7 @@ class RequestContextManager:
         return response
 
     async def json(self):
-        if self.cache_key not in self.cache:
+        if not self.cache.has_valid_entry(self.cache_key):
             response = await self.response.json()
             self.cache.add(self.cache_key, self.response, self.headers)
         else:
