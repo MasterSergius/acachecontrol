@@ -24,7 +24,6 @@ class AsyncCache:
         self.default_max_age = config.get("max-age", DEFAULT_MAX_AGE)
 
     def __contains__(self, key):
-        """Check if entry exists and not expired."""
         return self._make_key_hashable(key) in self.cache
 
     def has_valid_entry(self, key):
