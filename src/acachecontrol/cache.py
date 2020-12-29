@@ -23,19 +23,15 @@ class AsyncCache:
         self._wait_until_completed = set()
         self.default_max_age = config.get("max-age", DEFAULT_MAX_AGE)
 
-    def __contains__(self, key):
-        return self._make_key_hashable(key) in self.cache
-
-    def has_valid_entry(self, key):
+    def has_valid_entry(self, key) -> bool:
         """Check if entry exists and not expired, delete expired."""
-        if key in self:
-            cache_key = self._make_key_hashable(key)
-            if self.is_cache_entry_expired(self.cache[cache_key]):
-                logger.debug(f"Cache entry is expired for {key} key")
-                self.delete(key)
-                return False
-            else:
+        cache_key = self._make_key_hashable(key)
+        if cache_key in self.cache:
+            if not self.is_cache_entry_expired(key):
                 return True
+
+            logger.debug(f"Cache entry is expired for {key} key")
+            self.delete(key)
         return False
 
     def add(self, key: Tuple[str, str, Dict], value: Any, headers: Any) -> None:
@@ -73,7 +69,8 @@ class AsyncCache:
     def clear_cache(self) -> None:
         self.cache = {}
 
-    def is_cache_entry_expired(self, entry: Any) -> bool:
+    def is_cache_entry_expired(self, key: Tuple[str, str, Dict]) -> bool:
+        entry = self.cache[self._make_key_hashable(key)]
         return entry["created_at"] + entry["max-age"] < time.time()
 
     async def register_new_key(
