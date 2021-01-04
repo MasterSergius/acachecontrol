@@ -62,3 +62,15 @@ async def test_post(mocker):
             "http://example.com",
             data={"key": "value"},
         )
+
+
+@pytest.mark.asyncio
+async def test_clear_cashe(mocker):
+    """Verify AsyncCacheControl.clear_cache works correctly."""
+    mock_RCM = mocker.Mock()
+    mock_cache = mocker.Mock()
+    async with AsyncCacheControl(
+        request_context_manager_cls=mock_RCM, cache=mock_cache
+    ) as cached_sess:
+        cached_sess.clear_cache()
+        mock_cache.clear_cache.assert_called_once()
