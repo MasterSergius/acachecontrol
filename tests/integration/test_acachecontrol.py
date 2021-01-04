@@ -51,7 +51,8 @@ async def test_hit_cache_json():
         {"id": 2, "title": "Post 2"},
         {"id": 3, "title": "Post 3"},
     ]
-    async with AsyncCacheControl() as cached_sess:
+    cache_observer = CacheObserver()
+    async with AsyncCacheControl(cache=cache_observer) as cached_sess:
         async with cached_sess.request("GET", url) as resp:
             resp_json = await resp.json()
             assert resp_json == expected_json
@@ -60,4 +61,4 @@ async def test_hit_cache_json():
             resp_json = await resp.json()
             assert resp_json == expected_json
 
-        # TODO: mock cache obj, assert get was called
+        assert ("GET", url, {}) in cache_observer.get_calls
