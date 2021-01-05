@@ -86,8 +86,4 @@ async def test_hit_cache_json():
             resp_json = await resp.json()
             assert resp_json == expected_json
 
-        assert (
-            "GET",
-            "https://my-json-server.typicode.com/typicode/demo/posts",
-            {},
-        ) in cache_observer.get_calls
+        assert ("GET", url, {}) in cache_observer.get_calls
