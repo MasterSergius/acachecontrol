@@ -20,10 +20,11 @@ class RequestContextManager:
             ) as response:
                 await response.read()
                 self.response = response
-                self.headers = response.headers
         else:
             self.response = self.cache.get(self.key)
-            self.headers = self.response.headers
+
+        self.headers = self.response.headers
+        self.status = self.response.status
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
