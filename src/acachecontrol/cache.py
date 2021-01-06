@@ -41,12 +41,16 @@ class AsyncCache:
 
         """
         cc_header = self.parse_cache_control_header(headers)
-        hashable_key = self._make_key_hashable(key)
-        self.cache[hashable_key] = {
-            "created_at": time.time(),
-            "max-age": cc_header.get("max-age", self.default_max_age),
-            "value": value,
-        }
+        # Although, no-cache means "The response may be stored by any cache,
+        # but MUST always go through validation with the origin server first
+        # before using it", we won't cache it for simplicity for now.
+        if not ("no-cache" in cc_header or "no-store" in cc_header):
+            hashable_key = self._make_key_hashable(key)
+            self.cache[hashable_key] = {
+                "created_at": time.time(),
+                "max-age": cc_header.get("max-age", self.default_max_age),
+                "value": value,
+            }
         self.release_new_key(key)
         logger.debug(f"Added a new entry to cache for {key} key")
 
@@ -139,15 +143,17 @@ class AsyncCache:
             headers.get("Cache-Control", headers.get("CACHE-CONTROL", "")),
         )
 
-        # currenly looking only for "max-age" directive
-        # TODO: consider to look at "no-cache" and "no-store" directives
-        parsed_header = {}
+        # Currently, parse the most important directives
+        # TODO: consider parse all possible directives
+        parsed_header = {}  # type: Dict[str, Any]
         for directive in cache_control_header.split(","):
-            try:
+            cleaned_directive = directive.strip().lower()
+            # get directives without values
+            if cleaned_directive in ("no-cache", "no-store"):
+                parsed_header[cleaned_directive] = True
+            elif "=" in cleaned_directive:
                 key, value = directive.split("=", 1)
-                if "max-age" == key.strip().lower():
+                if "max-age" == key:
                     parsed_header["max-age"] = int(value)
-            except ValueError:
-                # ignore other directives for now
-                pass
+            # ignore all other directives except no-cache, no-store, max-age
         return parsed_header

@@ -44,7 +44,8 @@ async def test_hit_cache():
 
 
 @pytest.mark.asyncio
-async def test_hit_cache_json():
+async def test_no_hit_cache():
+    # response from given url contains 'no-cache' directive
     url = "https://my-json-server.typicode.com/typicode/demo/posts"
     expected_json = [
         {"id": 1, "title": "Post 1"},
@@ -54,6 +55,30 @@ async def test_hit_cache_json():
     cache_observer = CacheObserver()
     async with AsyncCacheControl(cache=cache_observer) as cached_sess:
         async with cached_sess.request("GET", url) as resp:
+            resp_json = await resp.json()
+            assert resp_json == expected_json
+
+        async with cached_sess.request("GET", url) as resp:
+            resp_json = await resp.json()
+            assert resp_json == expected_json
+
+        assert len(cache_observer.get_calls) == 0
+
+
+@pytest.mark.asyncio
+async def test_hit_cache_json():
+    # response from given url contains 'no-cache' directive
+    url = "https://my-json-server.typicode.com/typicode/demo/posts"
+    expected_json = [
+        {"id": 1, "title": "Post 1"},
+        {"id": 2, "title": "Post 2"},
+        {"id": 3, "title": "Post 3"},
+    ]
+    cache_observer = CacheObserver()
+    async with AsyncCacheControl(cache=cache_observer) as cached_sess:
+        async with cached_sess.request("GET", url) as resp:
+            # clean headers to force cache response
+            resp.headers = {}
             resp_json = await resp.json()
             assert resp_json == expected_json
 
