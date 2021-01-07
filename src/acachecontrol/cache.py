@@ -22,6 +22,9 @@ class AsyncCache:
         self.cache = {}  # type: Dict
         self._wait_until_completed = set()
         self.default_max_age = config.get("max-age", DEFAULT_MAX_AGE)
+        self.cacheable_methods = config.get(
+            "cacheable_methods", ("HEAD", "GET")
+        )
 
     def has_valid_entry(self, key) -> bool:
         """Check if entry exists and not expired, delete expired."""
@@ -41,10 +44,7 @@ class AsyncCache:
 
         """
         cc_header = self.parse_cache_control_header(headers)
-        # Although, no-cache means "The response may be stored by any cache,
-        # but MUST always go through validation with the origin server first
-        # before using it", we won't cache it for simplicity for now.
-        if not ("no-cache" in cc_header or "no-store" in cc_header):
+        if self._is_response_cacheable(key[0], cc_header):
             hashable_key = self._make_key_hashable(key)
             self.cache[hashable_key] = {
                 "created_at": time.time(),
@@ -114,6 +114,16 @@ class AsyncCache:
         """
         method, url, params = key
         return method, url, self._dict_hash(params)
+
+    def _is_response_cacheable(self, method, cc_header):
+        if method not in self.cacheable_methods:
+            return False
+        # Although, no-cache means "The response may be stored by any cache,
+        # but MUST always go through validation with the origin server first
+        # before using it", we won't cache it for simplicity for now.
+        if "no-cache" in cc_header or "no-store" in cc_header:
+            return False
+        return True
 
     @staticmethod
     def _dict_hash(input_dict: Dict) -> str:
