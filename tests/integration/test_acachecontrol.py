@@ -15,7 +15,7 @@ class CacheObserver(AsyncCache):
         self.add_calls.append((key, value, headers))
 
     def get(self, key):
-        value = self.cache.get(self._make_key_hashable(key))["value"]
+        value = self.cache.get(key)["value"]
         self.get_calls.append(key)
         return value
 
@@ -62,7 +62,7 @@ async def test_hit_cache():
             assert resp.status == 200
             assert "Example Domain" in resp_text
 
-        assert ("GET", "http://example.com", {}) in cache_observer.get_calls
+        assert ("GET", "http://example.com") in cache_observer.get_calls
 
 
 @pytest.mark.asyncio
@@ -112,4 +112,4 @@ async def test_hit_cache_json():
             assert resp.status == 200
             assert resp_json == expected_json
 
-        assert ("GET", url, {}) in cache_observer.get_calls
+        assert ("GET", url) in cache_observer.get_calls

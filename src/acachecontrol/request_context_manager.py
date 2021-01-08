@@ -7,7 +7,8 @@ class RequestContextManager:
         self.url = url
         self.params = params
         self.client_session = client_session
-        self.key = (method, url, params)
+        # TODO: consider canonify url
+        self.key = (method, url)
         self.response = None
         self.headers = None
 

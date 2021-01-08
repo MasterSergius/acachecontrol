@@ -33,8 +33,7 @@ class AsyncCache:
 
     def has_valid_entry(self, key) -> bool:
         """Check if entry exists and not expired, delete expired."""
-        cache_key = self._make_key_hashable(key)
-        if cache_key in self.cache:
+        if key in self.cache:
             if not self.is_cache_entry_expired(key):
                 return True
 
@@ -42,7 +41,7 @@ class AsyncCache:
             self.delete(key)
         return False
 
-    def add(self, key: Tuple[str, str, Dict], value: Any, headers: Any) -> None:
+    def add(self, key: Tuple[str, str], value: Any, headers: Any) -> None:
         """Add value to the cache.
 
         headers - any dict-like obj
@@ -50,8 +49,7 @@ class AsyncCache:
         """
         cc_header = self.parse_cache_control_header(headers)
         if self._is_response_cacheable(key[0], cc_header):
-            hashable_key = self._make_key_hashable(key)
-            self.cache[hashable_key] = {
+            self.cache[key] = {
                 "created_at": time.time(),
                 "max-age": cc_header.get("max-age", self.default_max_age),
                 "value": value,
@@ -59,9 +57,9 @@ class AsyncCache:
         self.release_new_key(key)
         logger.debug(f"Added a new entry to cache for {key} key")
 
-    def get(self, key: Tuple[str, str, Dict]) -> Any:
+    def get(self, key: Tuple[str, str]) -> Any:
         try:
-            cache_entry = self.cache.get(self._make_key_hashable(key))
+            cache_entry = self.cache.get(key)
             if cache_entry:
                 logger.debug(f"Get entry from cache for {key} key")
                 return cache_entry["value"]
@@ -71,18 +69,18 @@ class AsyncCache:
                 f"Error getting value from cache for {key} key"
             )
 
-    def delete(self, key: Tuple[str, str, Dict]) -> None:
+    def delete(self, key: Tuple[str, str]) -> None:
         logger.debug(f"Delete entry from cache for {key} key")
-        self.cache.pop(self._make_key_hashable(key), None)
+        self.cache.pop(key, None)
 
     def clear_cache(self) -> None:
         self.cache = {}
 
-    def is_cache_entry_expired(self, key: Tuple[str, str, Dict]) -> bool:
-        entry = self.cache[self._make_key_hashable(key)]
+    def is_cache_entry_expired(self, key: Tuple[str, str]) -> bool:
+        entry = self.cache[key]
         return entry["created_at"] + entry["max-age"] < time.time()
 
-    async def register_new_key(self, key: Tuple[str, str, Dict]):
+    async def register_new_key(self, key: Tuple[str, str]):
         """Register new key before actual request, so all subsequent requests
         will know and wait until this one returned a result.
 
@@ -90,33 +88,22 @@ class AsyncCache:
         More details here: https://en.wikipedia.org/wiki/Cache_stampede
         """
         total_wait_time = 0.0
-        hashable_key = self._make_key_hashable(key)
         while True:
-            if hashable_key not in self._wait_until_completed:
+            if key not in self._wait_until_completed:
                 break
             await asyncio.sleep(self.sleep_time)
             total_wait_time += self.sleep_time
             if total_wait_time >= self.wait_timeout:
                 raise TimeoutException(f"Timeout exceeded for {key}")
-        if hashable_key not in self.cache:
-            self._wait_until_completed.add(hashable_key)
+        if key not in self.cache:
+            self._wait_until_completed.add(key)
 
-    def release_new_key(self, key: Tuple[str, str, Dict]):
+    def release_new_key(self, key: Tuple[str, str]):
         try:
-            self._wait_until_completed.remove(self._make_key_hashable(key))
+            self._wait_until_completed.remove(key)
         except Exception:
             # TODO: consider adding debug log here
             pass
-
-    def _make_key_hashable(
-        self, key: Tuple[str, str, Dict]
-    ) -> Tuple[str, str, str]:
-        """Currently, key structure is always (str, str, dict)
-
-        Thus, we need to convert last parameter only
-        """
-        method, url, params = key
-        return method, url, self._dict_hash(params)
 
     def _is_response_cacheable(self, method, cc_header):
         if method not in self.cacheable_methods:
@@ -127,13 +114,6 @@ class AsyncCache:
         if "no-cache" in cc_header or "no-store" in cc_header:
             return False
         return True
-
-    @staticmethod
-    def _dict_hash(input_dict: Dict) -> str:
-        """Get dict hash."""
-        return hashlib.sha256(
-            json.dumps(sorted(input_dict.items())).encode()
-        ).hexdigest()
 
     @staticmethod
     def parse_cache_control_header(headers) -> Dict:
