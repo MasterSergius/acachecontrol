@@ -21,6 +21,13 @@ DEFAULT_SLEEP_TIME = 0.1
 
 
 class AsyncCache:
+    """Asynchronous Cache implementation.
+
+    Current solution supports only in-memory cache.
+    Entries are being stored in python dict.
+    Key: Tuple(http_method, url), value: aiohttp response obj
+    """
+
     def __init__(self, config={}):
         self.cache = {}  # type: Dict
         self._wait_until_completed = set()
@@ -31,7 +38,7 @@ class AsyncCache:
             "cacheable_methods", ("HEAD", "GET")
         )
 
-    def has_valid_entry(self, key) -> bool:
+    def has_valid_entry(self, key: Tuple[str, str]) -> bool:
         """Check if entry exists and not expired, delete expired."""
         if key in self.cache:
             if not self.is_cache_entry_expired(key):
@@ -58,6 +65,7 @@ class AsyncCache:
         logger.debug(f"Added a new entry to cache for {key} key")
 
     def get(self, key: Tuple[str, str]) -> Any:
+        """Get entry from cache."""
         try:
             cache_entry = self.cache.get(key)
             if cache_entry:
@@ -70,13 +78,16 @@ class AsyncCache:
             )
 
     def delete(self, key: Tuple[str, str]) -> None:
+        """Delete entry from cache."""
         logger.debug(f"Delete entry from cache for {key} key")
         self.cache.pop(key, None)
 
     def clear_cache(self) -> None:
+        """Delete everything from cache."""
         self.cache = {}
 
     def is_cache_entry_expired(self, key: Tuple[str, str]) -> bool:
+        """Check if cache entry is expired."""
         entry = self.cache[key]
         return entry["created_at"] + entry["max-age"] < time.time()
 
@@ -99,6 +110,7 @@ class AsyncCache:
             self._wait_until_completed.add(key)
 
     def release_new_key(self, key: Tuple[str, str]):
+        """Release previously registered key, so all subsequent requests can use it."""
         try:
             self._wait_until_completed.remove(key)
         except Exception:
@@ -106,6 +118,7 @@ class AsyncCache:
             pass
 
     def _is_response_cacheable(self, method, cc_header):
+        """Check if response can be cached."""
         if method not in self.cacheable_methods:
             return False
         # Although, no-cache means "The response may be stored by any cache,
