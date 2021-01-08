@@ -14,14 +14,19 @@ from .exceptions import CacheException, TimeoutException
 logger = logging.getLogger(__name__)
 
 
-DEFAULT_MAX_AGE = 120  # seconds
+# Values below provided in seconds
+DEFAULT_MAX_AGE = 120
+DEFAULT_WAIT_TIMEOUT = 30
+DEFAULT_SLEEP_TIME = 0.1
 
 
 class AsyncCache:
     def __init__(self, config={}):
         self.cache = {}  # type: Dict
         self._wait_until_completed = set()
-        self.default_max_age = config.get("max-age", DEFAULT_MAX_AGE)
+        self.default_max_age = config.get("max_age", DEFAULT_MAX_AGE)
+        self.wait_timeout = config.get("wait_timeout", DEFAULT_WAIT_TIMEOUT)
+        self.sleep_time = config.get("sleep_time", DEFAULT_SLEEP_TIME)
         self.cacheable_methods = config.get(
             "cacheable_methods", ("HEAD", "GET")
         )
@@ -77,9 +82,7 @@ class AsyncCache:
         entry = self.cache[self._make_key_hashable(key)]
         return entry["created_at"] + entry["max-age"] < time.time()
 
-    async def register_new_key(
-        self, key: Tuple[str, str, Dict], wait_timeout: float = 10.0
-    ):
+    async def register_new_key(self, key: Tuple[str, str, Dict]):
         """Register new key before actual request, so all subsequent requests
         will know and wait until this one returned a result.
 
@@ -91,9 +94,9 @@ class AsyncCache:
         while True:
             if hashable_key not in self._wait_until_completed:
                 break
-            await asyncio.sleep(0.1)
-            total_wait_time += 0.1
-            if total_wait_time >= wait_timeout:
+            await asyncio.sleep(self.sleep_time)
+            total_wait_time += self.sleep_time
+            if total_wait_time >= self.wait_timeout:
                 raise TimeoutException(f"Timeout exceeded for {key}")
         if hashable_key not in self.cache:
             self._wait_until_completed.add(hashable_key)
