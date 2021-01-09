@@ -8,18 +8,14 @@ def test_add_happy_path(monkeypatch):
     monkeypatch.setattr(time, "time", lambda: current_timestamp)
     acache = AsyncCache()
     acache.add(
-        key=("GET", "test_url", {"data": "test_data"}),
+        key=("GET", "test_url"),
         value="test_response",
         headers={
             "Cache-Control": "max-age=604800",
             "Content-Type": "text/html; charset=UTF-8",
         },
     )
-    cache_key = (
-        "GET",
-        "test_url",
-        "95f4fd1dd8c46219f8cbb42419a2dc53317f6eb3b95711a752773c042f623483",
-    )
+    cache_key = ("GET", "test_url")
     assert cache_key in acache.cache
     assert acache.cache[cache_key]["created_at"] == current_timestamp
     assert acache.cache[cache_key]["max-age"] == 604800
@@ -29,7 +25,7 @@ def test_add_happy_path(monkeypatch):
 def test_non_cacheable_method():
     acache = AsyncCache()
     acache.add(
-        key=("test_method", "test_url", {"data": "test_data"}),
+        key=("test_method", "test_url"),
         value="test_response",
         headers={
             "Cache-Control": "max-age=604800",
@@ -42,7 +38,7 @@ def test_non_cacheable_method():
 def test_add_no_cache():
     acache = AsyncCache()
     acache.add(
-        key=("GET", "test_url", {"data": "test_data"}),
+        key=("GET", "test_url"),
         value="test_response",
         headers={
             "Cache-Control": "max-age=604800,no-cache",
@@ -52,7 +48,7 @@ def test_add_no_cache():
     assert len(acache.cache) == 0
 
     acache.add(
-        key=("GET", "test_url", {"data": "test_data"}),
+        key=("GET", "test_url"),
         value="test_response",
         headers={
             "Cache-Control": "max-age=604800,no-store",

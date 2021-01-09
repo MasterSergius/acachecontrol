@@ -7,7 +7,8 @@ class RequestContextManager:
         self.url = url
         self.params = params
         self.client_session = client_session
-        self.key = (method, url, params)
+        # TODO: consider canonify url
+        self.key = (method, url)
         self.response = None
         self.headers = None
 
@@ -32,6 +33,7 @@ class RequestContextManager:
         self.headers = None
 
     async def text(self):
+        """Return response in plain str format."""
         if not self.cache.has_valid_entry(self.key):
             response = await self.response.text()
             self.cache.add(self.key, self.response, self.headers)
@@ -40,6 +42,7 @@ class RequestContextManager:
         return response
 
     async def json(self):
+        """Return response in json format."""
         if not self.cache.has_valid_entry(self.key):
             response = await self.response.json()
             self.cache.add(self.key, self.response, self.headers)
