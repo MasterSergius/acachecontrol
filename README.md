@@ -1,9 +1,12 @@
+[![PyPI](https://img.shields.io/pypi/v/acachecontrol)](https://pypi.org/project/acachecontrol/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 # Async CacheControl for aiohttp
 
 > Requires Python3.6+
 
-### Note: Library is under development.
-### For contributing see development_notes.md as starting guide
+### Note: Library is still under development, there might be a lot of bugs.
+### For contributing see development_notes.md as a starting guide
 
 ## What and why
 

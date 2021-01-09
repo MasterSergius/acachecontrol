@@ -1,3 +1,5 @@
 # Async CacheControl changelog
 
-No releases yet, library is under development
+## v0.2.0
+
+- Initial beta-release.
