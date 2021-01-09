@@ -14,6 +14,8 @@ from .exceptions import CacheException, TimeoutException
 logger = logging.getLogger(__name__)
 
 
+CACHEABLE_METHODS = ("HEAD", "GET")
+
 # Values below provided in seconds
 DEFAULT_MAX_AGE = 120
 DEFAULT_WAIT_TIMEOUT = 30
@@ -35,7 +37,7 @@ class AsyncCache:
         self.wait_timeout = config.get("wait_timeout", DEFAULT_WAIT_TIMEOUT)
         self.sleep_time = config.get("sleep_time", DEFAULT_SLEEP_TIME)
         self.cacheable_methods = config.get(
-            "cacheable_methods", ("HEAD", "GET")
+            "cacheable_methods", CACHEABLE_METHODS
         )
 
     def has_valid_entry(self, key: Tuple[str, str]) -> bool:
