@@ -23,7 +23,7 @@ class CacheObserver(AsyncCache):
 @pytest.mark.asyncio
 async def test_request():
     async with AsyncCacheControl() as cached_sess:
-        async with cached_sess.request("GET", "http://example.com") as resp:
+        async with cached_sess.get("http://example.com") as resp:
             resp_text = await resp.text()
             assert resp.status == 200
             assert "Example Domain" in resp_text
@@ -52,12 +52,12 @@ async def test_get():
 async def test_hit_cache():
     cache_observer = CacheObserver()
     async with AsyncCacheControl(cache=cache_observer) as cached_sess:
-        async with cached_sess.request("GET", "http://example.com") as resp:
+        async with cached_sess.get("http://example.com") as resp:
             resp_text = await resp.text()
             assert resp.status == 200
             assert "Example Domain" in resp_text
 
-        async with cached_sess.request("GET", "http://example.com") as resp:
+        async with cached_sess.get("http://example.com") as resp:
             resp_text = await resp.text()
             assert resp.status == 200
             assert "Example Domain" in resp_text
@@ -76,12 +76,12 @@ async def test_no_hit_cache():
     ]
     cache_observer = CacheObserver()
     async with AsyncCacheControl(cache=cache_observer) as cached_sess:
-        async with cached_sess.request("GET", url) as resp:
+        async with cached_sess.get(url) as resp:
             resp_json = await resp.json()
             assert resp.status == 200
             assert resp_json == expected_json
 
-        async with cached_sess.request("GET", url) as resp:
+        async with cached_sess.get(url) as resp:
             resp_json = await resp.json()
             assert resp.status == 200
             assert resp_json == expected_json
@@ -100,14 +100,14 @@ async def test_hit_cache_json():
     ]
     cache_observer = CacheObserver()
     async with AsyncCacheControl(cache=cache_observer) as cached_sess:
-        async with cached_sess.request("GET", url) as resp:
+        async with cached_sess.get(url) as resp:
             # clean headers to force cache response
             resp.headers = {}
             resp_json = await resp.json()
             assert resp.status == 200
             assert resp_json == expected_json
 
-        async with cached_sess.request("GET", url) as resp:
+        async with cached_sess.get(url) as resp:
             resp_json = await resp.json()
             assert resp.status == 200
             assert resp_json == expected_json

@@ -3,11 +3,9 @@
 Current implementation is just a draft, wrapper around simple dict.
 """
 import asyncio
-import hashlib
-import json
 import logging
 import time
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, Set, Tuple
 
 from .exceptions import CacheException, TimeoutException
 
@@ -30,9 +28,10 @@ class AsyncCache:
     Key: Tuple(http_method, url), value: aiohttp response obj
     """
 
-    def __init__(self, config={}):
+    def __init__(self, config: Dict = None):
         self.cache = {}  # type: Dict
-        self._wait_until_completed = set()
+        config = config or {}
+        self._wait_until_completed = set()  # type: Set
         self.default_max_age = config.get("max_age", DEFAULT_MAX_AGE)
         self.sleep_time = config.get("sleep_time", DEFAULT_SLEEP_TIME)
         self.cacheable_methods = config.get(

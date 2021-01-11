@@ -7,8 +7,8 @@ from .request_context_manager import RequestContextManager
 class AsyncCacheControl:
     def __init__(
         self,
+        cache: AsyncCache = AsyncCache(),
         request_context_manager_cls=RequestContextManager,
-        cache=AsyncCache(),
     ):
         self._request_context_manager_cls = request_context_manager_cls
         self.cache = cache

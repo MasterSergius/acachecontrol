@@ -1,6 +1,6 @@
 import pytest
 
-from acachecontrol import AsyncCacheControl
+from acachecontrol import AsyncCache, AsyncCacheControl
 
 
 @pytest.mark.asyncio
@@ -8,7 +8,7 @@ async def test_request(mocker):
     """Verify AsyncCacheControl.request works correctly."""
     mock_RCM = mocker.Mock()
     async with AsyncCacheControl(
-        request_context_manager_cls=mock_RCM
+        cache=AsyncCache(), request_context_manager_cls=mock_RCM
     ) as cached_sess:
         _ = cached_sess.request("GET", "http://example.com")
         mock_RCM.assert_called_with(
