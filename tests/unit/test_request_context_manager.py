@@ -16,4 +16,4 @@ def test_init(mocker):
     assert rcm.key == (method, url)
     assert rcm.params == {"timeout": timeout, "allow_redirects": True}
     assert rcm.cache == cache
-    assert rcm.cache.wait_timeout == timeout
+    assert rcm.timeout == timeout
