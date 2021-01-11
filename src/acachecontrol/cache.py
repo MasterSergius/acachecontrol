@@ -32,14 +32,14 @@ class AsyncCache:
 
     def __init__(self, config: Dict = None):
         self.cache = {}  # type: Dict
+        config = config or {}
         self._wait_until_completed = set()  # type: Set
-        if config:
-            self.default_max_age = config.get("max_age", DEFAULT_MAX_AGE)
-            self.wait_timeout = config.get("wait_timeout", DEFAULT_WAIT_TIMEOUT)
-            self.sleep_time = config.get("sleep_time", DEFAULT_SLEEP_TIME)
-            self.cacheable_methods = config.get(
-                "cacheable_methods", CACHEABLE_METHODS
-            )
+        self.default_max_age = config.get("max_age", DEFAULT_MAX_AGE)
+        self.wait_timeout = config.get("wait_timeout", DEFAULT_WAIT_TIMEOUT)
+        self.sleep_time = config.get("sleep_time", DEFAULT_SLEEP_TIME)
+        self.cacheable_methods = config.get(
+            "cacheable_methods", CACHEABLE_METHODS
+        )
 
     def has_valid_entry(self, key: Tuple[str, str]) -> bool:
         """Check if entry exists and not expired, delete expired."""
