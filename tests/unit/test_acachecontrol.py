@@ -10,7 +10,7 @@ async def test_request(mocker):
     async with AsyncCacheControl(
         request_context_manager_cls=mock_RCM
     ) as cached_sess:
-        _ = cached_sess.request("GET", "http://example.com")
+        _ = cached_sess.get("http://example.com")
         mock_RCM.assert_called_with(
             cached_sess._async_client_session,
             cached_sess.cache,
@@ -18,9 +18,7 @@ async def test_request(mocker):
             "http://example.com",
         )
 
-        _ = cached_sess.request(
-            "POST", "http://example.com", data={"key": "value"}
-        )
+        _ = cached_sess.poet("http://example.com", data={"key": "value"})
         mock_RCM.assert_called_with(
             cached_sess._async_client_session,
             cached_sess.cache,
