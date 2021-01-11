@@ -3,8 +3,6 @@
 Current implementation is just a draft, wrapper around simple dict.
 """
 import asyncio
-import hashlib
-import json
 import logging
 import time
 from typing import Any, Dict, Set, Tuple
