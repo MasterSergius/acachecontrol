@@ -93,6 +93,9 @@ class AsyncCache:
         entry = self.cache[key]
         return entry["created_at"] + entry["max-age"] < time.time()
 
+    def set_wait_timeout(self, wait_timeout):
+        self.wait_timeout = wait_timeout
+
     async def register_new_key(self, key: Tuple[str, str]):
         """Register new key before actual request, so all subsequent requests
         will know and wait until this one returned a result.

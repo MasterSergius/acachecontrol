@@ -3,6 +3,8 @@ class RequestContextManager:
 
     def __init__(self, client_session, cache, method, url, **params):
         self.cache = cache
+        if "timeout" in params:
+            self.cache.set_wait_timeout(params["timeout"])
         self.method = method
         self.url = url
         self.params = params
