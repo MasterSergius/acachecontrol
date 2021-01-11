@@ -7,13 +7,14 @@ class RequestContextManager:
         self.url = url
         self.params = params
         self.client_session = client_session
+        self.timeout = params.get("timeout")
         # TODO: consider canonify url
         self.key = (method, url)
         self.response = None
         self.headers = None
 
     async def __aenter__(self):
-        await self.cache.register_new_key(self.key)
+        await self.cache.register_new_key(self.key, self.timeout)
 
         if not self.cache.has_valid_entry(self.key):
             async with self.client_session.request(

@@ -18,7 +18,7 @@ CACHEABLE_METHODS = ("HEAD", "GET")
 
 # Values below provided in seconds
 DEFAULT_MAX_AGE = 120
-DEFAULT_WAIT_TIMEOUT = 30
+DEFAULT_WAIT_TIMEOUT = 60 * 5  # same value as in aiohttp library
 DEFAULT_SLEEP_TIME = 0.1
 
 
@@ -34,7 +34,6 @@ class AsyncCache:
         self.cache = {}  # type: Dict
         self._wait_until_completed = set()
         self.default_max_age = config.get("max_age", DEFAULT_MAX_AGE)
-        self.wait_timeout = config.get("wait_timeout", DEFAULT_WAIT_TIMEOUT)
         self.sleep_time = config.get("sleep_time", DEFAULT_SLEEP_TIME)
         self.cacheable_methods = config.get(
             "cacheable_methods", CACHEABLE_METHODS
@@ -93,7 +92,9 @@ class AsyncCache:
         entry = self.cache[key]
         return entry["created_at"] + entry["max-age"] < time.time()
 
-    async def register_new_key(self, key: Tuple[str, str]):
+    async def register_new_key(
+        self, key: Tuple[str, str], timeout=DEFAULT_WAIT_TIMEOUT
+    ):
         """Register new key before actual request, so all subsequent requests
         will know and wait until this one returned a result.
 
@@ -106,7 +107,7 @@ class AsyncCache:
                 break
             await asyncio.sleep(self.sleep_time)
             total_wait_time += self.sleep_time
-            if total_wait_time >= self.wait_timeout:
+            if total_wait_time >= timeout:
                 raise TimeoutException(f"Timeout exceeded for {key}")
         if key not in self.cache:
             self._wait_until_completed.add(key)
