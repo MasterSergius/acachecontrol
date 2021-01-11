@@ -16,11 +16,14 @@ There is a good and simple library [CacheControl](https://github.com/ionrock/cac
 
 ```py
 import asyncio
-from acachecontrol import AsyncCacheControl
+from acachecontrol import AsyncCache, AsyncCacheControl
 
 
 async def main():
-    async with AsyncCacheControl() as cached_sess:
+    cache = AsyncCache(config={"sleep_time": 0.2})
+    # `AsyncCache()` with default configuration is used
+    # if `cache` not provided
+    async with AsyncCacheControl(cache=cache) as cached_sess:
         async with cached_sess.get('http://example.com') as resp:
             resp_text = await resp.text()
             print(resp_text)
