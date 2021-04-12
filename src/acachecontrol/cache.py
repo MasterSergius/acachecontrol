@@ -1,10 +1,11 @@
 """Cache implementation for async app.
 
-Current implementation is just a draft, wrapper around simple dict.
+Current implementation is a wrapper over OrderedDict object, implements LRU cache.
 """
 import asyncio
 import logging
 import time
+from collections import OrderedDict
 from typing import Any, Dict, Set, Tuple
 
 from .exceptions import CacheException, TimeoutException
@@ -18,18 +19,18 @@ CACHEABLE_METHODS = ("HEAD", "GET")
 DEFAULT_MAX_AGE = 120
 DEFAULT_WAIT_TIMEOUT = 60 * 5  # same value as in aiohttp library
 DEFAULT_SLEEP_TIME = 0.1
+DEFAULT_CACHE_CAPACITY = 100  # max amount of records in cache
 
 
 class AsyncCache:
     """Asynchronous Cache implementation.
 
-    Current solution supports only in-memory cache.
-    Entries are being stored in python dict.
+    Supports any OrderedDict-like object as cache_backend.
     Key: Tuple(http_method, url), value: aiohttp response obj
     """
 
-    def __init__(self, config: Dict = None):
-        self.cache = {}  # type: Dict
+    def __init__(self, config: Dict = None, cache_backend=None):
+        self.cache = cache_backend if cache_backend else OrderedDict()
         config = config or {}
         self._wait_until_completed = set()  # type: Set
         self.default_max_age = config.get("max_age", DEFAULT_MAX_AGE)
@@ -37,6 +38,7 @@ class AsyncCache:
         self.cacheable_methods = config.get(
             "cacheable_methods", CACHEABLE_METHODS
         )
+        self.capacity = config.get("capacity", DEFAULT_CACHE_CAPACITY)
 
     def has_valid_entry(self, key: Tuple[str, str]) -> bool:
         """Check if entry exists and not expired, delete expired."""
@@ -61,6 +63,9 @@ class AsyncCache:
                 "max-age": cc_header.get("max-age", self.default_max_age),
                 "value": value,
             }
+            self.cache.move_to_end(key)
+            if len(self.cache) > self.capacity:
+                self.cache.popitem(last=False)
         self.release_new_key(key)
         logger.debug(f"Added a new entry to cache for {key} key")
 
@@ -70,6 +75,7 @@ class AsyncCache:
             cache_entry = self.cache.get(key)
             if cache_entry:
                 logger.debug(f"Get entry from cache for {key} key")
+                self.cache.move_to_end(key)
                 return cache_entry["value"]
             raise CacheException(f"No cache entry for {key} key")
         except Exception:
