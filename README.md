@@ -75,7 +75,7 @@ class CustomCacheBackend():
 
 Then you can use it in `AsyncCache`:
 
-```
+```py
 import asyncio
 from acachecontrol import AsyncCache, AsyncCacheControl
 
@@ -93,7 +93,7 @@ asyncio.run(main())
 
 Similarly, you can replace RequestContextManager (assume its implementation in module `custom_implementations`):
 
-```
+```py
 import asyncio
 from acachecontrol import AsyncCache, AsyncCacheControl
 
