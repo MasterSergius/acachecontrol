@@ -90,7 +90,7 @@ class AsyncCache:
 
     def clear_cache(self) -> None:
         """Delete everything from cache."""
-        self.cache = {}
+        self.cache.clear()
 
     def is_cache_entry_expired(self, key: Tuple[str, str]) -> bool:
         """Check if cache entry is expired."""
