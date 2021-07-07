@@ -1,5 +1,10 @@
 # Async CacheControl changelog
 
+## v0.3.2
+- Update config files to make lib available for Python3.9.
+- Remove v0.3.1.
+- No functional changes.
+
 ## v0.3.1
 
 - Fix clear cache.
