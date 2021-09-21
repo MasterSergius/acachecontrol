@@ -1,3 +1,6 @@
+from .constants import DEFAULT_WAIT_TIMEOUT
+
+
 class RequestContextManager:
     """Wrapper around _RequestContextManager from aiohttp."""
 
@@ -7,7 +10,7 @@ class RequestContextManager:
         self.url = url
         self.params = params
         self.client_session = client_session
-        self.timeout = params.get("timeout")
+        self.timeout = params.get("timeout", DEFAULT_WAIT_TIMEOUT)
         # TODO: consider canonify url
         self.key = (method, url)
         self.response = None

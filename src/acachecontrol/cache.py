@@ -8,18 +8,16 @@ import time
 from collections import OrderedDict
 from typing import Any, Dict, Set, Tuple
 
+from .constants import (
+    CACHEABLE_METHODS,
+    DEFAULT_CACHE_CAPACITY,
+    DEFAULT_MAX_AGE,
+    DEFAULT_SLEEP_TIME,
+    DEFAULT_WAIT_TIMEOUT,
+)
 from .exceptions import CacheException, TimeoutException
 
 logger = logging.getLogger(__name__)
-
-
-CACHEABLE_METHODS = ("HEAD", "GET")
-
-# Values below provided in seconds
-DEFAULT_MAX_AGE = 120
-DEFAULT_WAIT_TIMEOUT = 60 * 5  # same value as in aiohttp library
-DEFAULT_SLEEP_TIME = 0.1
-DEFAULT_CACHE_CAPACITY = 100  # max amount of records in cache
 
 
 class AsyncCache:
