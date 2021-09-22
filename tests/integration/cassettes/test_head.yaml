@@ -1,0 +1,39 @@
+interactions:
+- request:
+    body: null
+    headers: {}
+    method: HEAD
+    uri: http://example.com
+  response:
+    body:
+      string: ''
+    headers:
+      Accept-Ranges:
+      - bytes
+      Age:
+      - '466846'
+      Cache-Control:
+      - max-age=604800
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '648'
+      Content-Type:
+      - text/html; charset=UTF-8
+      Date:
+      - Wed, 22 Sep 2021 09:21:00 GMT
+      Etag:
+      - '"3147526947"'
+      Expires:
+      - Wed, 29 Sep 2021 09:21:00 GMT
+      Last-Modified:
+      - Thu, 17 Oct 2019 07:18:26 GMT
+      Server:
+      - ECS (bsa/EB15)
+      X-Cache:
+      - HIT
+    status:
+      code: 200
+      message: OK
+    url: http://example.com
+version: 1

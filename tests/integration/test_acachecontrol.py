@@ -19,7 +19,7 @@ class CacheObserver(AsyncCache):
         self.get_calls.append(key)
         return value
 
-
+@pytest.mark.vcr()
 @pytest.mark.asyncio
 async def test_request():
     async with AsyncCacheControl() as cached_sess:
@@ -29,6 +29,7 @@ async def test_request():
             assert "Example Domain" in resp_text
 
 
+@pytest.mark.vcr()
 @pytest.mark.asyncio
 async def test_head():
     async with AsyncCacheControl() as cached_sess:
@@ -39,6 +40,7 @@ async def test_head():
             assert resp.headers.get("Cache-Control") == "max-age=604800"
 
 
+@pytest.mark.vcr()
 @pytest.mark.asyncio
 async def test_get():
     async with AsyncCacheControl() as cached_sess:
@@ -48,6 +50,7 @@ async def test_get():
             assert "Example Domain" in resp_text
 
 
+@pytest.mark.vcr()
 @pytest.mark.asyncio
 async def test_hit_cache():
     cache_observer = CacheObserver()
@@ -65,6 +68,7 @@ async def test_hit_cache():
         assert ("GET", "http://example.com") in cache_observer.get_calls
 
 
+@pytest.mark.vcr()
 @pytest.mark.asyncio
 async def test_no_hit_cache():
     # response from given url contains 'no-cache' directive
@@ -89,6 +93,7 @@ async def test_no_hit_cache():
         assert len(cache_observer.get_calls) == 0
 
 
+@pytest.mark.vcr()
 @pytest.mark.asyncio
 async def test_hit_cache_json():
     # response from given url contains 'no-cache' directive
