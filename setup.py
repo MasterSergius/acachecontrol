@@ -21,12 +21,16 @@ def read_version():
 with open("requirements.txt", "r", encoding="utf-8") as f:
     requires = [x.strip() for x in f if x.strip()]
 
+with open('README.md', 'r', 'utf-8') as f:
+    readme = f.read()
 
 setup(
     name='acachecontrol',
     version=read_version(),
     license='Apache License 2.0',
     description='Cache-Control for aiohttp',
+    long_description=readme,
+    long_description_content_type='text/markdown',
     author='Serhii Buniak, Andrii Ivaniuk',
     author_email='master.sergius@gmail.com, andrii.ivaniuk@gmail.com',
     url='https://github.com/MasterSergius/acachecontrol',
@@ -52,7 +56,7 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
     project_urls={
-        'Changelog': 'https://github.com/MasterSerius/acachecontrol/blob/master/CHANGELOG.md',
+        'Changelog': 'https://github.com/MasterSergius/acachecontrol/blob/master/CHANGELOG.md',
         'Issue Tracker': 'https://github.com/MasterSergius/acachecontrol/issues',
     },
     python_requires='>=3.6,<4.0',
