@@ -83,3 +83,26 @@ def test_cache_capacity(monkeypatch):
     assert ("GET", "test_url_1") not in acache.cache
     assert ("GET", "test_url_2") in acache.cache
     assert ("GET", "test_url_3") in acache.cache
+
+
+def test_parse_cache_control_header():
+    # check happy path
+    headers = {
+        "cache-control": "no-cache,max-age=3600",
+        "content-type": "application/json",
+    }
+    expected = {"no-cache": True, "max-age": 3600}
+    assert AsyncCache.parse_cache_control_header(headers) == expected
+
+    # check if max-age is not a number
+    headers = {
+        "cache-control": "max-age=age",
+        "content-type": "application/json",
+    }
+    expected = {}
+    assert AsyncCache.parse_cache_control_header(headers) == expected
+
+    # check if no cache-control header is given
+    headers = {"content-type": "application/json"}
+    expected = {}
+    assert AsyncCache.parse_cache_control_header(headers) == expected

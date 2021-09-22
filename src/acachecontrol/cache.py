@@ -166,6 +166,9 @@ class AsyncCache:
             elif "=" in cleaned_directive:
                 key, value = directive.split("=", 1)
                 if "max-age" == key:
-                    parsed_header["max-age"] = int(value)
+                    try:
+                        parsed_header["max-age"] = int(value)
+                    except ValueError:
+                        logger.debug('Failed to parse "max-age" directive.')
             # ignore all other directives except no-cache, no-store, max-age
         return parsed_header

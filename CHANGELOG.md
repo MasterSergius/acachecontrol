@@ -1,5 +1,8 @@
 # Async CacheControl changelog
 
+## v0.3.4
+- Do not fail if max-age is not a number
+
 ## v0.3.3
 - Set default request timeout if nothing is given, fix issue #18
 
