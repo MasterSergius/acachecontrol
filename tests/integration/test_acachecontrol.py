@@ -19,6 +19,7 @@ class CacheObserver(AsyncCache):
         self.get_calls.append(key)
         return value
 
+
 @pytest.mark.vcr()
 @pytest.mark.asyncio
 async def test_request():
