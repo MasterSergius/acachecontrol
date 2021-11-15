@@ -181,7 +181,7 @@ class AsyncCache:
             if cleaned_directive in ("no-cache", "no-store"):
                 parsed_header[cleaned_directive] = True
             elif "=" in cleaned_directive:
-                key, value = directive.split("=", 1)
+                key, value = cleaned_directive.split("=", 1)
                 if "max-age" == key:
                     try:
                         parsed_header["max-age"] = int(value)
