@@ -94,6 +94,14 @@ def test_parse_cache_control_header():
     expected = {"no-cache": True, "max-age": 3600}
     assert AsyncCache.parse_cache_control_header(headers) == expected
 
+    # check spaces are being handled correctly
+    headers = {
+        "cache-control": "public, max-age=3600",
+        "content-type": "application/json",
+    }
+    expected = {"max-age": 3600}
+    assert AsyncCache.parse_cache_control_header(headers) == expected
+
     # check if max-age is not a number
     headers = {
         "cache-control": "max-age=age",

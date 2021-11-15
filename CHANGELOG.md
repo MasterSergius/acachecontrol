@@ -1,5 +1,9 @@
 # Async CacheControl changelog
 
+## v0.3.5
+- Fix usage of custom cache backend
+- Fix parsing directives with extra whitespaces, thanks @dfuhry
+
 ## v0.3.4
 - Do not fail if max-age is not a number
 
