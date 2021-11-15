@@ -1,7 +1,20 @@
-"""Cache implementation for async app.
-
-Current implementation is a wrapper over OrderedDict object, implements LRU cache.
 """
+Copyright 2021 - Present Serhii Buniak
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
+
 import asyncio
 import logging
 import time
@@ -23,12 +36,16 @@ logger = logging.getLogger(__name__)
 class AsyncCache:
     """Asynchronous Cache implementation.
 
+    Current implementation is a wrapper over OrderedDict object, implements LRU cache.
     Supports any OrderedDict-like object as cache_backend.
+
     Key: Tuple(http_method, url), value: aiohttp response obj
     """
 
     def __init__(self, config: Dict = None, cache_backend=None):
-        self.cache = cache_backend if cache_backend else OrderedDict()
+        self.cache = (
+            cache_backend if cache_backend is not None else OrderedDict()
+        )
         config = config or {}
         self._wait_until_completed = set()  # type: Set
         self.default_max_age = config.get("max_age", DEFAULT_MAX_AGE)

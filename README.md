@@ -55,6 +55,9 @@ class CustomCacheBackend():
         self.storage[key] = value
         self.item_order.append(key)
 
+    def get(self, key):
+        return self.storage.get(key)
+
     def pop(self, key):
         self.item_order.remove(key)
         return self.storage.pop(key)
