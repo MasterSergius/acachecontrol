@@ -1,5 +1,9 @@
 # Async CacheControl changelog
 
+## v0.3.6
+- Update aiohttp version, >=3.10.2, fix issue #27
+- Update developers notes
+
 ## v0.3.5
 - Fix usage of custom cache backend
 - Fix parsing directives with extra whitespaces, thanks @dfuhry
