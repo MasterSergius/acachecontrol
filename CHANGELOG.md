@@ -1,5 +1,8 @@
 # Async CacheControl changelog
 
+## v0.3.7
+- Move setuptools to build time requirement, fix issue [#28](https://github.com/MasterSergius/acachecontrol/issues/28)
+
 ## v0.3.6
 - Update aiohttp version, >=3.10.2, fix issue #27
 - Update developers notes
